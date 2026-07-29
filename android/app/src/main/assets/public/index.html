@@ -273,6 +273,7 @@
   .fab-wrap.open .fab svg{ transform:rotate(45deg); }
   .fab-mini{ width:46px;height:46px;border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 12px 20px -8px rgba(20,24,16,.4); transform:scale(0); opacity:0; transition:.3s var(--bounce); pointer-events:none; }
   .fab-wrap.open .fab-mini{ transform:scale(1); opacity:1; pointer-events:auto; }
+  .fab-mini.addcard{ background:var(--pop2); color:#fff; transition-delay:.1s; }
   .fab-mini.income{ background:var(--leather); color:var(--lime); transition-delay:.05s; }
   .fab-mini.expense{ background:#4a2620; color:#f0a98f; transition-delay:0s; }
   .fab-mini:hover{ transform:scale(1.12) !important; }
@@ -338,7 +339,7 @@
       <button class="navitem active" id="navHome" title="Beranda" onclick="scrollToSection('top')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
       </button>
-      <button class="navitem" id="navCards" title="Kantong" onclick="scrollToSection('wallet')">
+      <button class="navitem" id="navCards" title="Kartu" onclick="scrollToSection('wallet')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>
       </button>
       <button class="navitem" id="navTx" title="Transaksi" onclick="scrollToSection('txpanel')">
@@ -365,7 +366,7 @@
             <div class="pocket-seam"></div>
             <div class="pocket-lower">
               <div class="balance-mask" id="balanceMask">••••••</div>
-              <div class="balance-label">Total saldo semua kantong</div>
+              <div class="balance-label">Total saldo semua kartu</div>
               <div class="eye-toggle" onclick="toggleBalance()" id="eyeToggle">
                 <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
               </div>
@@ -373,7 +374,7 @@
           </div>
         </div>
 
-        <p class="wallet-hint">Tarik kartu ke atas buat keluarin dari saku, atau sentuh aja. Tambah lewat slot kosong 👛</p>
+        <p class="wallet-hint">Tarik kartu ke atas buat keluarin dari dompet, atau sentuh aja. Tambah kartu baru lewat tombol <b>+</b> di pojok bawah.</p>
       </div>
 
       <div class="right-col">
@@ -421,7 +422,7 @@
                 <button type="button" class="chip" data-type="income" onclick="setFilterType('income')">Pemasukan</button>
                 <button type="button" class="chip" data-type="expense" onclick="setFilterType('expense')">Pengeluaran</button>
               </div>
-              <div class="tx-search"><input type="text" id="txSearch" placeholder="Cari catatan, kategori, atau kantong..." oninput="setSearch(this.value)"></div>
+              <div class="tx-search"><input type="text" id="txSearch" placeholder="Cari catatan, kategori, atau kartu..." oninput="setSearch(this.value)"></div>
               <div id="activeCatFilter"></div>
               <div id="txList"></div>
             </div>
@@ -432,6 +433,9 @@
   </main>
 
   <div class="fab-wrap" id="fabWrap">
+    <button class="fab-mini addcard" title="Tambah kartu" onclick="closeFabMenu(); openAddPocketModal();">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/></svg>
+    </button>
     <button class="fab-mini income" title="Catat pemasukan" onclick="closeFabMenu(); openTxModal('income');">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
     </button>
@@ -482,10 +486,10 @@
   const CATEGORY_COLOR = { Makanan:'#f2c185', Transportasi:'#9fc4e8', Tagihan:'#f0a8a0', Belanja:'#c7a8ec', Hiburan:'#9fe0d0', Kesehatan:'#f2a8c4', Lainnya:'#cfd6c2' };
   const CATEGORY_ICON = { Makanan:'food', Transportasi:'bus', Tagihan:'receipt', Belanja:'bag', Hiburan:'party', Kesehatan:'heart', Lainnya:'sparkle' };
   const POCKET_ICON_KEYS = ['wallet','bank','target','bowl','game','car','house','plane'];
-  const STORAGE_KEY = 'saku-wallet-state-v5';
+  const STORAGE_KEY = 'saku-wallet-state-v6';
   const MAX_POCKETS = 3;
   const TODAY = '2026-07-26';
-  const SUCCESS_PHRASES = ['Mantap! 🎉','Sip, tercatat! ✨','Gaskeun! 🚀','Nice satu lagi! 💪'];
+  const SUCCESS_PHRASES = ['Mantap!','Sip, tercatat!','Gaskeun!','Nice satu lagi!'];
 
   let state = null;
   let activePocket = null;
@@ -526,26 +530,8 @@
   function defaultState(){
     return {
       balanceHidden: true,
-      monthlyBudget: 2000000,
-      pockets: [
-        { id:1, name:'Tabungan', colorKey:'forest', icon:'target', goal:10000000, locked:false,
-          transactions:[
-            { id:101, category:'Lainnya', note:'Setor tabungan', amount:500000, date:'2026-07-20' },
-            { id:102, category:'Lainnya', note:'Setor tabungan', amount:300000, date:'2026-07-10' },
-          ] },
-        { id:2, name:'Kebutuhan Harian', colorKey:'blue', icon:'house', goal:null, locked:false,
-          transactions:[
-            { id:103, category:'Lainnya', note:'Gaji masuk', amount:2000000, date:'2026-07-01' },
-            { id:104, category:'Belanja', note:'Belanja bulanan', amount:-450000, date:'2026-07-18' },
-            { id:105, category:'Tagihan', note:'Bayar listrik', amount:-350000, date:'2026-07-15' },
-          ] },
-        { id:3, name:'Jajan & Hiburan', colorKey:'sunset', icon:'bowl', goal:null, locked:false,
-          transactions:[
-            { id:106, category:'Lainnya', note:'Uang saku', amount:500000, date:'2026-07-05' },
-            { id:107, category:'Hiburan', note:'Netflix', amount:-169000, date:'2026-07-24' },
-            { id:108, category:'Hiburan', note:'Nongkrong', amount:-120000, date:'2026-07-22' },
-          ] },
-      ]
+      monthlyBudget: null,
+      pockets: []
     };
   }
 
@@ -594,11 +580,15 @@
   });
 
   function fireConfetti(){
-    const pieces = ['🎉','✨','🎊','⭐'];
+    const colors = [getComputedStyle(document.documentElement).getPropertyValue('--pop'), 'var(--lime)', 'var(--leather)', 'var(--pop2)'];
     for(let i=0; i<18; i++){
       const el = document.createElement('div');
       el.className = 'confetti-piece';
-      el.textContent = pieces[Math.floor(Math.random()*pieces.length)];
+      const shape = Math.random() > 0.5 ? '50%' : '3px';
+      el.style.width = (6 + Math.random()*5) + 'px';
+      el.style.height = el.style.width;
+      el.style.borderRadius = shape;
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
       const startX = window.innerWidth/2 + (Math.random()-0.5)*120;
       const dx = (Math.random()-0.5)*300;
       const dy = 200 + Math.random()*200;
@@ -722,17 +712,11 @@
         ' onclick="selectPocket(' + p.id + ')">' +
         '<div class="top-line"><span class="icon-badge">' + iconSvg(p.icon) + '</span>' +
         (p.locked ? '<div class="locked-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Kunci</div>' :
-          '<button class="quick-del" title="Hapus kantong" onclick="event.stopPropagation(); quickDeletePocket(' + p.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>') +
+          '<button class="quick-del" title="Hapus kartu" onclick="event.stopPropagation(); quickDeletePocket(' + p.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>') +
         '</div>' +
         '<div><div class="brandmark">' + escapeHtml(p.name) + '</div><div class="digits">' + bal + '</div></div>' +
         '</div>';
     });
-    if(n < MAX_POCKETS){
-      const top = n * 34;
-      html += '<div class="add-card-slot" style="top:' + top + 'px; z-index:1;" onclick="openAddPocketModal()">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>' +
-        '<span>Tambah kantong</span></div>';
-    }
     stack.innerHTML = html;
     newlyAddedId = null;
     stack.querySelectorAll('.paycard').forEach(function(card){
@@ -802,7 +786,7 @@
     if(!activePocket){
       panel.innerHTML = '<div class="detail-empty">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>' +
-        '<p>Belum ada kantong yang dipilih. Sentuh salah satu kantong di saku dompet buat lihat saldo &amp; riwayatnya.</p></div>';
+        '<p>Belum ada kartu yang dipilih. Sentuh salah satu kartu di saku dompet buat lihat saldo &amp; riwayatnya.</p></div>';
       return;
     }
     const p = state.pockets.find(function(x){ return x.id===activePocket; });
@@ -817,7 +801,7 @@
       goalHtml = '<div class="goal-bar-wrap">' +
         '<div class="goal-bar-labels"><span>Menuju target</span><span>' + rupiah(bal) + ' / ' + rupiah(p.goal) + '</span></div>' +
         '<div class="goal-bar"><div class="goal-bar-fill" id="goalFillBar" style="width:0%;"></div></div>' +
-        (pct >= 100 ? '<div class="goal-hit">🎉 Target tercapai, keren!</div>' : '') +
+        (pct >= 100 ? '<div class="goal-hit">Target tercapai, keren!</div>' : '') +
       '</div>';
       if(pct >= 100 && !celebratedGoals.has(p.id)){
         celebratedGoals.add(p.id);
@@ -825,7 +809,7 @@
       }
     }
     const recentTx = p.transactions.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); }).slice(0,4);
-    const txHtml = recentTx.length ? recentTx.map(function(t){ return txRowHtml(t, p.name, true); }).join('') : '<div class="tx-empty" style="padding:8px 0;">Belum ada transaksi di kantong ini.</div>';
+    const txHtml = recentTx.length ? recentTx.map(function(t){ return txRowHtml(t, p.name, true); }).join('') : '<div class="tx-empty" style="padding:8px 0;">Belum ada transaksi di kartu ini.</div>';
     const topCat = topCategoryForPocket(p);
     const topCatHtml = topCat ? (
       '<div class="meta-row"><div class="top-cat-row"><span class="top-cat-icon" style="background:' + (CATEGORY_COLOR[topCat.category]||CATEGORY_COLOR.Lainnya) + ';">' + iconSvg(CATEGORY_ICON[topCat.category]||'sparkle') + '</span><div class="k">Kategori teratas</div></div><div class="v down">' + escapeHtml(topCat.category) + '</div></div>'
@@ -849,12 +833,12 @@
         '<button class="btn ghost" onclick="openTxModal(\'expense\', ' + p.id + ')" ' + (p.locked?'disabled':'') + '>- Pengeluaran</button>' +
       '</div>' +
       '<div>' +
-        '<div class="mini-tx-title">Riwayat kantong ini</div>' +
+        '<div class="mini-tx-title">Riwayat kartu ini</div>' +
         '<div class="mini-tx-row">' + txHtml + '</div>' +
       '</div>' +
       '<div class="card-actions" id="deleteRow">' +
-        '<button class="btn ghost small" onclick="toggleLock(' + p.id + ')">' + (p.locked ? 'Buka kunci' : 'Kunci kantong') + '</button>' +
-        '<button class="btn danger small" onclick="askDeletePocket(' + p.id + ')">Hapus kantong</button>' +
+        '<button class="btn ghost small" onclick="toggleLock(' + p.id + ')">' + (p.locked ? 'Buka kunci' : 'Kunci kartu') + '</button>' +
+        '<button class="btn danger small" onclick="askDeletePocket(' + p.id + ')">Hapus kartu</button>' +
       '</div>';
     if(p.goal){ animateBarFill('#goalFillBar', Math.min(100, Math.round((bal / p.goal) * 100))); }
   }
@@ -865,12 +849,12 @@
     p.locked = !p.locked;
     renderCardstack(); renderDetail();
     saveState();
-    showToastMsg(p.locked ? 'Kantong dikunci 🔒' : 'Kantong dibuka 🔓');
+    showToastMsg(p.locked ? 'Kartu dikunci' : 'Kartu dibuka');
   }
   function askDeletePocket(id){
     const row = document.getElementById('deleteRow');
     row.innerHTML =
-      '<span style="font-size:12.5px; color:var(--muted); flex:1 1 100%; display:flex; align-items:center; font-weight:600;">Hapus kantong ini? Riwayatnya ikut hilang.</span>' +
+      '<span style="font-size:12.5px; color:var(--muted); flex:1 1 100%; display:flex; align-items:center; font-weight:600;">Hapus kartu ini? Riwayatnya ikut hilang.</span>' +
       '<button class="btn danger small" onclick="confirmDeletePocket(' + id + ')">Ya, hapus</button>' +
       '<button class="btn ghost small" onclick="renderDetail()">Batal</button>';
   }
@@ -879,7 +863,7 @@
     activePocket = null;
     renderAll();
     saveState();
-    showToastMsg('Kantong dihapus 🗑️');
+    showToastMsg('Kartu dihapus');
   }
 
   function quickDeletePocket(id){
@@ -893,12 +877,12 @@
       if(activePocket === id) activePocket = null;
       renderAll();
       saveState();
-      showUndoToast('Kantong "' + escapeHtml(removed.name) + '" dihapus', function(){
+      showUndoToast('Kartu "' + escapeHtml(removed.name) + '" dihapus', function(){
         state.pockets.splice(idx, 0, removed);
         newlyAddedId = removed.id;
         renderAll();
         saveState();
-        showToastMsg('Kantong dikembalikan ✅');
+        showToastMsg('Kartu dikembalikan');
       });
     }, 220);
   }
@@ -914,13 +898,13 @@
       '<div class="stat-card clickable" title="Klik buat sembunyikan/tampilkan saldo" onclick="toggleBalance()"><div class="k">' + iconSvg('wallet') + 'Saldo saat ini</div><div class="v">' + (state.balanceHidden ? '••••••' : rupiah(totalBalance())) + '</div></div>' +
       '<div class="stat-card clickable" title="Klik buat filter pemasukan" onclick="setFilterType(\'income\'); flashPanel(\'txpanel\');"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Masuk bulan ini</div><div class="v up">+' + rupiah(mi.income) + '</div></div>' +
       '<div class="stat-card clickable" title="Klik buat filter pengeluaran" onclick="setFilterType(\'expense\'); flashPanel(\'txpanel\');"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Keluar bulan ini</div><div class="v down">-' + rupiah(mi.expense) + '</div></div>' +
-      '<div class="stat-card clickable" title="Klik buat lihat kantong" onclick="scrollToSection(\'wallet\')"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>Jumlah kantong</div><div class="v">' + state.pockets.length + '</div></div>';
+      '<div class="stat-card clickable" title="Klik buat lihat kartu" onclick="scrollToSection(\'wallet\')"><div class="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>Jumlah kartu</div><div class="v">' + state.pockets.length + '</div></div>';
   }
 
   function renderBudgetPanel(){
     const body = document.getElementById('budgetBody');
     if(!state.monthlyBudget){
-      body.innerHTML = '<div class="budget-empty">Belum ada budget bulanan.<br>Atur biar pengeluaran makin terkontrol 💪</div>';
+      body.innerHTML = '<div class="budget-empty">Belum ada budget bulanan.<br>Atur biar pengeluaran makin terkontrol.</div>';
       return;
     }
     const mi = monthlyIncomeExpense();
@@ -935,14 +919,14 @@
         '<div class="budget-row"><span class="bk">Sisa budget</span><span class="bv" style="' + (remaining<0?'color:var(--red)':'') + '">' + rupiah(remaining) + '</span></div>' +
       '</div>' +
       '<div class="budget-outer-bar"><div class="budget-outer-fill ' + fillClass + '" id="budgetFillBar" style="width:0%;"></div></div>' +
-      (remaining < 0 ? '<div class="budget-status over">⚠️ Budget bulan ini sudah terlampaui</div>' : '<div class="budget-status">' + pct + '% dari budget terpakai</div>');
+      (remaining < 0 ? '<div class="budget-status over">Budget bulan ini sudah terlampaui</div>' : '<div class="budget-status">' + pct + '% dari budget terpakai</div>');
     animateBarFill('#budgetFillBar', pct);
   }
 
   function openBudgetModal(){
     openModal(
       '<h3>' + iconSvg('target') + 'Atur budget bulanan</h3>' +
-      '<div class="modal-sub">Batas total pengeluaran kamu bulan ini, lintas semua kantong.</div>' +
+      '<div class="modal-sub">Batas total pengeluaran kamu bulan ini, lintas semua kartu.</div>' +
       '<form id="budgetForm">' +
         '<div class="form-group"><label>Batas pengeluaran (Rp)</label><input type="text" id="bgAmount" placeholder="cth. 2000000" inputmode="numeric" value="' + (state.monthlyBudget || '') + '"></div>' +
         '<div class="form-err" id="bgError"></div>' +
@@ -963,7 +947,7 @@
       renderBudgetPanel();
       saveState();
       closeModal();
-      showToastMsg('Budget disimpan 💾');
+      showToastMsg('Budget disimpan');
     });
   }
   function clearBudget(){
@@ -1054,7 +1038,7 @@
     ref.pocket.transactions.splice(ref.idx, 1);
     renderAll();
     saveState();
-    showToastMsg('Transaksi dihapus 🗑️');
+    showToastMsg('Transaksi dihapus');
   }
 
   function renderBreakdown(){
@@ -1065,7 +1049,7 @@
     });
     const total = Object.values(totals).reduce(function(s,v){ return s+v; }, 0);
     if(total === 0){
-      body.innerHTML = '<div class="budget-empty">Belum ada pengeluaran bulan ini 👌</div>';
+      body.innerHTML = '<div class="budget-empty">Belum ada pengeluaran bulan ini.</div>';
       return;
     }
     let cumulative = 0;
@@ -1121,7 +1105,7 @@
   }
 
   function exportCSV(){
-    const rows = [['Tanggal','Kantong','Kategori','Catatan','Jenis','Nominal']];
+    const rows = [['Tanggal','Kartu','Kategori','Catatan','Jenis','Nominal']];
     allTransactionsFlat().slice().reverse().forEach(function(t){
       rows.push([t.date, t.pocketName, t.category, (t.note||'').replace(/,/g,';'), t.amount>0?'Pemasukan':'Pengeluaran', Math.abs(t.amount)]);
     });
@@ -1132,7 +1116,7 @@
     a.href = url; a.download = 'riwayat-transaksi.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToastMsg('📄 Riwayat diunduh sebagai CSV');
+    showToastMsg('Riwayat diunduh sebagai CSV');
   }
 
   function openModal(html){
@@ -1143,12 +1127,12 @@
   function closeModalBackdrop(e){ if(e.target.id === 'modalOverlay') closeModal(); }
 
   function openAddPocketModal(){
-    if(state.pockets.length >= MAX_POCKETS){ showToastMsg('Maksimal 3 kantong, hapus salah satu dulu'); return; }
+    if(state.pockets.length >= MAX_POCKETS){ showToastMsg('Maksimal 3 kartu, hapus salah satu dulu'); return; }
     openModal(
-      '<h3>' + iconSvg('wallet') + 'Tambah kantong</h3>' +
-      '<div class="modal-sub">Kantong baru akan muncul di saku dompet kamu.</div>' +
+      '<h3>' + iconSvg('wallet') + 'Tambah kartu</h3>' +
+      '<div class="modal-sub">Kartu baru akan muncul di saku dompet kamu.</div>' +
       '<form id="addPocketForm">' +
-        '<div class="form-group"><label>Nama kantong</label><input type="text" id="apName" placeholder="cth. Tabungan, Jajan, Kebutuhan" required maxlength="24"></div>' +
+        '<div class="form-group"><label>Nama kartu</label><input type="text" id="apName" placeholder="cth. Tabungan, Jajan, Kebutuhan" required maxlength="24"></div>' +
         '<div class="form-row2">' +
           '<div class="form-group"><label>Saldo awal (Rp)</label><input type="text" id="apBalance" placeholder="0" inputmode="numeric"></div>' +
           '<div class="form-group"><label>Target (opsional)</label><input type="text" id="apGoal" placeholder="cth. 10000000" inputmode="numeric"></div>' +
@@ -1158,7 +1142,7 @@
         '<div class="form-err" id="apError"></div>' +
         '<div class="modal-actions">' +
           '<button type="button" class="btn ghost" onclick="closeModal()">Batal</button>' +
-          '<button type="submit" class="btn primary">Simpan kantong</button>' +
+          '<button type="submit" class="btn primary">Simpan kartu</button>' +
         '</div>' +
       '</form>'
     );
@@ -1180,7 +1164,7 @@
       const goalVal = document.getElementById('apGoal').value;
       const goal = goalVal ? parseInt(goalVal, 10) : null;
       const err = document.getElementById('apError');
-      if(!name){ err.textContent = 'Nama kantong wajib diisi.'; err.classList.add('show'); shakeModal(); return; }
+      if(!name){ err.textContent = 'Nama kartu wajib diisi.'; err.classList.add('show'); shakeModal(); return; }
       const newPocket = { id: Date.now(), name: name, colorKey: window._apPicked || 'forest', icon: window._apIconPicked || 'wallet', goal: goal, locked:false, transactions: [] };
       if(startBal > 0){ newPocket.transactions.push({ id: Date.now()+1, category:'Lainnya', note:'Saldo awal', amount: startBal, date: TODAY }); }
       state.pockets.push(newPocket);
@@ -1188,7 +1172,7 @@
       renderAll();
       saveState();
       closeModal();
-      showToastMsg('Kantong baru siap! 🎉');
+      showToastMsg('Kartu baru siap!');
     });
   }
   function pickPocketSwatch(k){
@@ -1201,7 +1185,7 @@
   }
 
   function openTxModal(type, presetPocketId, editId){
-    if(state.pockets.length === 0){ showToastMsg('Tambah kantong dulu sebelum mencatat transaksi'); return; }
+    if(state.pockets.length === 0){ showToastMsg('Tambah kartu dulu sebelum mencatat transaksi'); return; }
     const editing = !!editId;
     let editTx = null, editPocketId = null;
     if(editing){
@@ -1219,13 +1203,13 @@
 
     openModal(
       '<h3>' + (editing ? iconSvg('receipt')+'Edit transaksi' : (isIncome ? iconSvg('wallet')+'Catat pemasukan' : iconSvg('bag')+'Catat pengeluaran')) + '</h3>' +
-      '<div class="modal-sub">' + (isIncome ? 'Saldo kantong yang dipilih akan bertambah.' : 'Saldo kantong yang dipilih akan berkurang.') + '</div>' +
+      '<div class="modal-sub">' + (isIncome ? 'Saldo kartu yang dipilih akan bertambah.' : 'Saldo kartu yang dipilih akan berkurang.') + '</div>' +
       '<div class="type-toggle">' +
         '<div class="type-opt ' + (isIncome?'active':'') + '" onclick="openTxModal(\'income\', ' + (presetPocketId||'null') + (editing?(', '+editId):'') + ')">Pemasukan</div>' +
         '<div class="type-opt ' + (!isIncome?'active':'') + '" onclick="openTxModal(\'expense\', ' + (presetPocketId||'null') + (editing?(', '+editId):'') + ')">Pengeluaran</div>' +
       '</div>' +
       '<form id="txForm">' +
-        '<div class="form-group"><label>Kantong</label><select id="txPocket">' + pocketOptions + '</select></div>' +
+        '<div class="form-group"><label>Kartu</label><select id="txPocket">' + pocketOptions + '</select></div>' +
         '<div class="form-group"><label>Kategori</label><select id="txCategory">' + catOptions + '</select></div>' +
         '<div class="form-row2">' +
           '<div class="form-group"><label>Nominal (Rp)</label><input type="text" id="txAmount" placeholder="cth. 250000" required inputmode="numeric" value="' + (editTx ? Math.abs(editTx.amount) : '') + '"></div>' +
@@ -1250,12 +1234,12 @@
       const note = document.getElementById('txNote').value.trim();
       const err = document.getElementById('txError');
       const targetPocket = state.pockets.find(function(x){ return x.id===pocketId; });
-      if(!targetPocket || !amt || amt <= 0){ err.textContent = 'Lengkapi kantong dan nominal yang valid.'; err.classList.add('show'); shakeModal(); return; }
-      if(!isIncome && targetPocket.locked){ err.textContent = 'Kantong ini terkunci, buka kunci dulu buat mencatat pengeluaran.'; err.classList.add('show'); shakeModal(); return; }
+      if(!targetPocket || !amt || amt <= 0){ err.textContent = 'Lengkapi kartu dan nominal yang valid.'; err.classList.add('show'); shakeModal(); return; }
+      if(!isIncome && targetPocket.locked){ err.textContent = 'Kartu ini terkunci, buka kunci dulu buat mencatat pengeluaran.'; err.classList.add('show'); shakeModal(); return; }
       const signedAmt = isIncome ? amt : -amt;
       if(!isIncome){
         const excludeId = editing ? editId : null;
-        if(!wouldBalanceCoverExpense(targetPocket, excludeId, amt)){ err.textContent = 'Saldo di kantong ini tidak cukup.'; err.classList.add('show'); shakeModal(); return; }
+        if(!wouldBalanceCoverExpense(targetPocket, excludeId, amt)){ err.textContent = 'Saldo di kartu ini tidak cukup.'; err.classList.add('show'); shakeModal(); return; }
       }
       if(editing){
         const ref = findTxRef(editId);
@@ -1271,7 +1255,7 @@
       renderAll();
       saveState();
       closeModal();
-      showToastMsg(editing ? 'Transaksi diperbarui ✅' : randomSuccess());
+      showToastMsg(editing ? 'Transaksi diperbarui' : randomSuccess());
     });
   }
 

@@ -13,27 +13,33 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg-1:#eef1e4; --bg-2:#fbfaf4;
     --leather:#2b3a20; --leather-2:#1e2a16; --leather-light:#3c4f2b;
-    --stitch: rgba(245,243,234,.35);
+    --stitch: rgba(201,162,77,.55);
     --lime:#a8e05a; --cream:#f6f3e8; --ink:#1c2415;
     --muted:#7c8570; --muted-2:#9aa38c;
     --card-shadow: 0 30px 60px -20px rgba(23,32,15,.45);
     --gold:#c9a24d; --red:#b3492f; --green:#5c8a2e; --orange:#c98b34;
     --pop:#ffb545; --pop2:#ff6f61;
     --bounce: cubic-bezier(.34,1.56,.64,1);
-    --font-display:'Baloo 2', sans-serif;
+    --font-display:'Fraunces', serif;
+    --thread:#c9a24d;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{height:100%; max-width:100%; overflow-x:hidden;}
   body{
     font-family:'Space Grotesk', sans-serif; font-weight:600;
-    background: radial-gradient(1200px 600px at 15% -10%, #f4f6ea 0%, transparent 60%), linear-gradient(160deg, var(--bg-1), var(--bg-2) 60%);
-    color:var(--ink); min-height:100vh; display:flex; -webkit-font-smoothing:antialiased; max-width:100vw;
+    background: radial-gradient(1200px 600px at 15% -10%, #f5f2e6 0%, transparent 60%), linear-gradient(160deg, var(--bg-1), var(--bg-2) 60%);
+    color:var(--ink); min-height:100vh; display:flex; -webkit-font-smoothing:antialiased; max-width:100vw; position:relative;
   }
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .sidebar, .main{ position:relative; z-index:1; }
   ::selection{ background: var(--lime); color:var(--leather-2); }
   button{ font-family:inherit; }
   svg{ display:block; }
@@ -49,7 +55,7 @@
   .navitem.active{ background:var(--leather); color:var(--lime); }
   .navitem.active::before{ content:''; position:absolute; left:-16px; width:4px; height:18px; border-radius:4px; background:var(--pop); }
 
-  .main{ flex:1; min-width:0; padding:36px 44px 90px; max-width:1240px; width:100%; }
+  .main{ flex:1; min-width:0; padding:36px 44px 130px; max-width:1240px; width:100%; }
   header.top{ margin-bottom:26px; }
   .eyebrow{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:6px; }
   h1.page-title{ font-family:var(--font-display); font-weight:800; font-size:34px; letter-spacing:-.01em; color:var(--leather); }
@@ -150,7 +156,7 @@
   .stat-card.clickable:hover{ transform:translateY(-3px) scale(1.02); border-color:var(--pop); }
   .stat-card.clickable:active{ transform:translateY(0) scale(.97); }
 
-  .panel{ background:var(--bg-2); border:1px solid rgba(43,58,32,.1); border-radius:22px; padding:22px; }
+  .panel{ background:var(--bg-2); border:1px solid rgba(43,58,32,.1); border-top:2px solid var(--thread); border-radius:22px; padding:22px; }
   .panel-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:10px; flex-wrap:wrap; }
   .panel-head h3{ font-family:var(--font-display); font-weight:700; font-size:18px; display:flex; align-items:center; gap:8px; }
   .panel-head h3 svg{ width:18px;height:18px; }
@@ -211,7 +217,9 @@
   .active-filter-badge button{ border:none;background:none;cursor:pointer;color:var(--muted); display:flex; padding:0; }
   .active-filter-badge button:hover{ color:var(--red); }
 
-  .tx-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 4px; border-bottom:1px solid rgba(43,58,32,.08); gap:10px; }
+  .tx-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 10px 12px 12px; border-bottom:1px solid rgba(43,58,32,.08); gap:10px; border-radius:10px; position:relative; }
+  .tx-row::before{ content:''; position:absolute; left:0; top:8px; bottom:8px; width:3px; border-radius:3px; background:var(--tx-accent, transparent); }
+  .tx-row:nth-child(even){ background:rgba(43,58,32,.025); }
   .tx-row:last-child{ border-bottom:none; padding-bottom:0; }
   .tx-left{ display:flex; align-items:center; gap:12px; min-width:0; }
   .tx-icon{ width:38px;height:38px;border-radius:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--ink); }
@@ -264,6 +272,12 @@
   .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px) scale(.9); background:var(--leather); color:var(--lime); padding:12px 22px; border-radius:30px; font-size:13px; font-weight:700; opacity:0; transition:.35s var(--bounce); z-index:60; display:flex; align-items:center; gap:8px; box-shadow:0 20px 30px -12px rgba(0,0,0,.4); }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
   .toast svg{ width:15px;height:15px; }
+
+  .app-footer{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:56px; margin-bottom:20px; padding-top:22px; border-top:1px dashed var(--stitch); font-size:12px; color:var(--muted); font-weight:600; flex-wrap:wrap; text-align:center; }
+  .app-footer b{ color:var(--leather); font-weight:800; }
+  .app-footer .footer-dot{ color:var(--thread); }
+  .app-footer a{ color:var(--leather); font-weight:700; text-decoration:none; border-bottom:1.5px solid var(--thread); padding-bottom:1px; transition:.2s var(--bounce); }
+  .app-footer a:hover{ color:var(--pop2); border-color:var(--pop2); }
 
   .fab-wrap{ position:fixed; right:30px; bottom:30px; z-index:40; display:flex; flex-direction:column; align-items:center; gap:14px; }
   .fab{ position:relative; width:60px;height:60px;border-radius:50%; background:var(--pop); color:var(--leather-2); border:none; box-shadow:0 16px 30px -10px rgba(20,24,16,.5); display:flex;align-items:center;justify-content:center; cursor:pointer; transition:.25s var(--bounce); }
@@ -318,13 +332,13 @@
 
   @media (max-width:1180px){ .grid{ grid-template-columns: minmax(0,1fr); } .wallet-zone{ max-width:420px; margin:0 auto; } }
   @media (max-width:900px){
-    .sidebar{ display:none; } .main{ padding:20px 16px 100px; max-width:100%; }
+    .sidebar{ display:none; } .main{ padding:20px 16px 140px; max-width:100%; }
     h1.page-title{ font-size:27px; } .stat-row{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
     .stat-card{ padding:14px 12px; } .stat-card .v{ font-size:17px; }
     .fab-wrap{ right:18px; bottom:18px; } .fab{ width:52px; height:52px; } .fab-mini{ width:42px; height:42px; }
   }
   @media (max-width:520px){
-    .main{ padding:18px 12px 100px; } .wallet-zone{ max-width:100%; }
+    .main{ padding:18px 12px 140px; } .wallet-zone{ max-width:100%; }
     .panel{ padding:16px; } .card-actions{ flex-direction:column; }
     .detail-panel{ min-height:auto; }
     .tx-sub{ max-width:150px; }
@@ -407,6 +421,14 @@
               <div id="trendBody"></div>
             </div>
 
+            <div class="panel rise-in" id="weeklyPanel" style="animation-delay:.22s;">
+              <div class="panel-head">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Ringkasan mingguan</h3>
+                <span id="weeklyRange" style="font-size:11.5px; color:var(--muted); font-weight:700;"></span>
+              </div>
+              <div id="weeklyBody"></div>
+            </div>
+
             <div class="panel rise-in" id="txpanel" style="animation-delay:.25s;">
               <div class="panel-head">
                 <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h12v18l-2-1.5L14 20l-2-1.5L10 20l-2-1.5L6 20V2z"/><path d="M9 7h6M9 11h6"/></svg>Transaksi terbaru</h3>
@@ -430,6 +452,12 @@
         </div>
       </div>
     </div>
+
+    <footer class="app-footer">
+      <span>App by <b>juls</b></span>
+      <span class="footer-dot">•</span>
+      <a href="https://portojul.vercel.app/" target="_blank" rel="noopener noreferrer">Lihat portofolio saya</a>
+    </footer>
   </main>
 
   <div class="fab-wrap" id="fabWrap">
@@ -612,6 +640,30 @@
     t._timer = setTimeout(function(){ t.classList.remove('show'); }, 4500);
   }
 
+  function formatThousands(v){
+    const digits = String(v == null ? '' : v).replace(/\D/g,'');
+    if(!digits) return '';
+    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  function parseThousands(v){
+    return parseInt(String(v == null ? '' : v).replace(/\./g,'') || '0', 10);
+  }
+  function attachThousandsInput(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', function(e){
+      const target = e.target;
+      const digitsBeforeCursor = target.value.slice(0, target.selectionStart).replace(/\D/g,'').length;
+      target.value = formatThousands(target.value);
+      let count = 0, pos = target.value.length;
+      for(let i=0; i<target.value.length; i++){
+        if(/\d/.test(target.value[i])) count++;
+        if(count === digitsBeforeCursor){ pos = i+1; break; }
+      }
+      target.setSelectionRange(pos, pos);
+    });
+  }
+
   function rupiah(n){
     const sign = n < 0 ? '-' : '';
     return sign + 'Rp' + Math.abs(Math.round(n)).toLocaleString('id-ID');
@@ -670,7 +722,7 @@
   }
 
   function renderAll(){
-    renderCardstack(); renderDetail(); renderStats(); renderBudgetPanel(); renderBreakdown(); renderTrend(); renderTxList(); renderBalance();
+    renderCardstack(); renderDetail(); renderStats(); renderBudgetPanel(); renderBreakdown(); renderTrend(); renderWeekly(); renderTxList(); renderBalance();
   }
 
   function renderBalance(){
@@ -928,7 +980,7 @@
       '<h3>' + iconSvg('target') + 'Atur budget bulanan</h3>' +
       '<div class="modal-sub">Batas total pengeluaran kamu bulan ini, lintas semua kartu.</div>' +
       '<form id="budgetForm">' +
-        '<div class="form-group"><label>Batas pengeluaran (Rp)</label><input type="text" id="bgAmount" placeholder="cth. 2000000" inputmode="numeric" value="' + (state.monthlyBudget || '') + '"></div>' +
+        '<div class="form-group"><label>Batas pengeluaran (Rp)</label><input type="text" id="bgAmount" placeholder="cth. 2.000.000" inputmode="numeric" value="' + formatThousands(state.monthlyBudget || '') + '"></div>' +
         '<div class="form-err" id="bgError"></div>' +
         '<div class="modal-actions">' +
           (state.monthlyBudget ? '<button type="button" class="btn danger" onclick="clearBudget()">Hapus budget</button>' : '') +
@@ -937,10 +989,10 @@
         '</div>' +
       '</form>'
     );
-    document.getElementById('bgAmount').addEventListener('input', function(e){ e.target.value = e.target.value.replace(/\D/g,''); });
+    attachThousandsInput('bgAmount');
     document.getElementById('budgetForm').addEventListener('submit', function(e){
       e.preventDefault();
-      const val = parseInt(document.getElementById('bgAmount').value || '0', 10);
+      const val = parseThousands(document.getElementById('bgAmount').value);
       const err = document.getElementById('bgError');
       if(!val || val <= 0){ err.textContent = 'Masukkan jumlah budget yang valid.'; err.classList.add('show'); shakeModal(); return; }
       state.monthlyBudget = val;
@@ -965,7 +1017,7 @@
     const catColor = CATEGORY_COLOR[t.category] || CATEGORY_COLOR.Lainnya;
     const catIcon = CATEGORY_ICON[t.category] || 'sparkle';
     const sub = (t.note ? escapeHtml(t.note) + ' · ' : '') + (compact ? '' : escapeHtml(pocketName) + ' · ') + formatDate(t.date);
-    return '<div class="tx-row">' +
+    return '<div class="tx-row" style="--tx-accent:' + catColor + ';">' +
       '<div class="tx-left">' +
         '<div class="tx-icon" style="background:' + catColor + ';">' + iconSvg(catIcon) + '</div>' +
         '<div class="tx-text">' +
@@ -1104,6 +1156,54 @@
       '<div class="trend-legend"><span><i class="dot income"></i>Masuk</span><span><i class="dot expense"></i>Keluar</span></div>';
   }
 
+  function getWeekRange(dateStr){
+    const d = new Date(dateStr);
+    const day = d.getDay();
+    const diffToMonday = (day === 0 ? -6 : 1 - day);
+    const monday = new Date(d); monday.setDate(d.getDate() + diffToMonday); monday.setHours(0,0,0,0);
+    const sunday = new Date(monday); sunday.setDate(monday.getDate()+6); sunday.setHours(23,59,59,999);
+    return { monday:monday, sunday:sunday };
+  }
+  function toISODate(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function renderWeekly(){
+    const body = document.getElementById('weeklyBody');
+    const rangeEl = document.getElementById('weeklyRange');
+    const { monday, sunday } = getWeekRange(TODAY);
+    rangeEl.textContent = monday.toLocaleDateString('id-ID',{day:'numeric',month:'short'}) + ' – ' + sunday.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+    const flat = allTransactionsFlat();
+    const days = [];
+    for(let i=0;i<7;i++){ const d = new Date(monday); d.setDate(monday.getDate()+i); days.push(d); }
+    const perDay = days.map(function(d){
+      const iso = toISODate(d);
+      let income = 0, expense = 0;
+      flat.forEach(function(t){ if(t.date === iso){ if(t.amount>0) income += t.amount; else expense += Math.abs(t.amount); } });
+      return { date:d, income:income, expense:expense };
+    });
+    const weekIncome = perDay.reduce(function(s,x){ return s+x.income; }, 0);
+    const weekExpense = perDay.reduce(function(s,x){ return s+x.expense; }, 0);
+    if(weekIncome === 0 && weekExpense === 0){
+      body.innerHTML = '<div class="budget-empty">Belum ada catatan transaksi minggu ini.</div>';
+      return;
+    }
+    const maxVal = Math.max(1, Math.max.apply(null, perDay.map(function(x){ return Math.max(x.income, x.expense); })));
+    const barsHtml = perDay.map(function(x){
+      const label = x.date.toLocaleDateString('id-ID', { weekday:'short' });
+      const incH = Math.round((x.income/maxVal)*100);
+      const expH = Math.round((x.expense/maxVal)*100);
+      const isToday = toISODate(x.date) === TODAY;
+      return '<div class="trend-col"><div class="trend-bars"><div class="trend-bar income" style="height:' + incH + '%"></div><div class="trend-bar expense" style="height:' + expH + '%"></div></div><div class="trend-label" style="' + (isToday?'color:var(--leather);font-weight:800;':'') + '">' + label + '</div></div>';
+    }).join('');
+    body.innerHTML =
+      '<div class="budget-rows" style="margin-bottom:12px;">' +
+        '<div class="budget-row"><span class="bk">Pemasukan minggu ini</span><span class="bv" style="color:var(--green);">+' + rupiah(weekIncome) + '</span></div>' +
+        '<div class="budget-row"><span class="bk">Pengeluaran minggu ini</span><span class="bv" style="color:var(--red);">-' + rupiah(weekExpense) + '</span></div>' +
+      '</div>' +
+      '<div class="trend-chart">' + barsHtml + '</div>' +
+      '<div class="trend-legend"><span><i class="dot income"></i>Masuk</span><span><i class="dot expense"></i>Keluar</span></div>';
+  }
+
   function exportCSV(){
     const rows = [['Tanggal','Kartu','Kategori','Catatan','Jenis','Nominal']];
     allTransactionsFlat().slice().reverse().forEach(function(t){
@@ -1135,7 +1235,7 @@
         '<div class="form-group"><label>Nama kartu</label><input type="text" id="apName" placeholder="cth. Tabungan, Jajan, Kebutuhan" required maxlength="24"></div>' +
         '<div class="form-row2">' +
           '<div class="form-group"><label>Saldo awal (Rp)</label><input type="text" id="apBalance" placeholder="0" inputmode="numeric"></div>' +
-          '<div class="form-group"><label>Target (opsional)</label><input type="text" id="apGoal" placeholder="cth. 10000000" inputmode="numeric"></div>' +
+          '<div class="form-group"><label>Target (opsional)</label><input type="text" id="apGoal" placeholder="cth. 10.000.000" inputmode="numeric"></div>' +
         '</div>' +
         '<div class="form-group"><label>Warna</label><div class="swatches" id="apSwatches"></div></div>' +
         '<div class="form-group"><label>Ikon</label><div class="icon-picker" id="apIcons"></div></div>' +
@@ -1154,15 +1254,14 @@
     document.getElementById('apIcons').innerHTML = POCKET_ICON_KEYS.map(function(k,i){
       return '<div class="icon-opt ' + (i===0?'picked':'') + '" data-i="' + k + '" onclick="pickPocketIcon(\'' + k + '\')">' + iconSvg(k) + '</div>';
     }).join('');
-    ['apBalance','apGoal'].forEach(function(id){
-      document.getElementById(id).addEventListener('input', function(e){ e.target.value = e.target.value.replace(/\D/g,''); });
-    });
+    attachThousandsInput('apBalance');
+    attachThousandsInput('apGoal');
     document.getElementById('addPocketForm').addEventListener('submit', function(e){
       e.preventDefault();
       const name = document.getElementById('apName').value.trim();
-      const startBal = parseInt(document.getElementById('apBalance').value || '0', 10);
+      const startBal = parseThousands(document.getElementById('apBalance').value);
       const goalVal = document.getElementById('apGoal').value;
-      const goal = goalVal ? parseInt(goalVal, 10) : null;
+      const goal = goalVal ? parseThousands(goalVal) : null;
       const err = document.getElementById('apError');
       if(!name){ err.textContent = 'Nama kartu wajib diisi.'; err.classList.add('show'); shakeModal(); return; }
       const newPocket = { id: Date.now(), name: name, colorKey: window._apPicked || 'forest', icon: window._apIconPicked || 'wallet', goal: goal, locked:false, transactions: [] };
@@ -1212,7 +1311,7 @@
         '<div class="form-group"><label>Kartu</label><select id="txPocket">' + pocketOptions + '</select></div>' +
         '<div class="form-group"><label>Kategori</label><select id="txCategory">' + catOptions + '</select></div>' +
         '<div class="form-row2">' +
-          '<div class="form-group"><label>Nominal (Rp)</label><input type="text" id="txAmount" placeholder="cth. 250000" required inputmode="numeric" value="' + (editTx ? Math.abs(editTx.amount) : '') + '"></div>' +
+          '<div class="form-group"><label>Nominal (Rp)</label><input type="text" id="txAmount" placeholder="cth. 250.000" required inputmode="numeric" value="' + (editTx ? formatThousands(Math.abs(editTx.amount)) : '') + '"></div>' +
           '<div class="form-group"><label>Tanggal</label><input type="date" id="txDate" value="' + (editTx ? editTx.date : TODAY) + '"></div>' +
         '</div>' +
         '<div class="form-group"><label>Catatan (opsional)</label><input type="text" id="txNote" placeholder="cth. Nasi goreng, bensin motor" maxlength="40" value="' + (editTx ? escapeHtml(editTx.note||'') : '') + '"></div>' +
@@ -1224,12 +1323,12 @@
         '</div>' +
       '</form>'
     );
-    document.getElementById('txAmount').addEventListener('input', function(e){ e.target.value = e.target.value.replace(/\D/g,''); });
+    attachThousandsInput('txAmount');
     document.getElementById('txForm').addEventListener('submit', function(e){
       e.preventDefault();
       const pocketId = parseInt(document.getElementById('txPocket').value, 10);
       const category = document.getElementById('txCategory').value;
-      const amt = parseInt(document.getElementById('txAmount').value || '0', 10);
+      const amt = parseThousands(document.getElementById('txAmount').value);
       const date = document.getElementById('txDate').value || TODAY;
       const note = document.getElementById('txNote').value.trim();
       const err = document.getElementById('txError');
